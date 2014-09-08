@@ -4,6 +4,7 @@
 # Ouput files
 *.o
 *.dylib
+*/tests/*
 
 # Eclipse
 .buildpath
