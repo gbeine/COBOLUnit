@@ -1,7 +1,7 @@
 000010* COBOLUnit is a COBOL Unit framework testing
 000011*
 000012* Logic name: CBU-add-suite
-000013*	source name: CBU00004.cob
+000013* source name: CBU00004.cob
 000023*
 000029*  Copyright (C) 2009 Hervé Vaujour
 000030*
@@ -23,7 +23,7 @@
 000046*>
 000047* Add a suite to the cobol unit framework
 000048* arg1: Nom-Suite name
-000049* arg2: Desc-Suite description 
+000049* arg2: Desc-Suite description
 000050  IDENTIFICATION DIVISION.
 000051  PROGRAM-ID.   CBU00004.
 000052  DATA DIVISION.
@@ -31,12 +31,12 @@
 000070    COPY CBUC0002.
 000117
 000120    LINKAGE SECTION.
-000130      	01 Nom PIC X(20) VALUE SPACES.
-000140      	01 Desc PIC X(100) VALUE SPACES.
-000150	  		COPY CBUC0001.
+000130          01 Nom PIC X(20) VALUE SPACES.
+000140          01 Desc PIC X(100) VALUE SPACES.
+000150                  COPY CBUC0001.
 000160   PROCEDURE DIVISION USING CBU-ctx Nom Desc.
 000172     IF TestIndex > 1
-000180     	THEN MOVE 1 TO TestIndex
+000180          THEN MOVE 1 TO TestIndex
 000190     END-IF.
 000191      INITIALIZE SuiteName(SuiteIndex).
 000192      INITIALIZE SuiteDesc(SuiteIndex).
@@ -48,6 +48,6 @@
 000214      MOVE 0 TO nb-test-succeed(SuiteIndex).
 000215      MOVE 0 TO nb-test-failed(SuiteIndex).
 000225      MOVE 0 TO nb-test-error(SuiteIndex).
-000241  	ADD 1 TO SuiteIndex.
-000250 	 EXIT PROGRAM.
-000260 	END PROGRAM CBU00004.  
+000241          ADD 1 TO SuiteIndex.
+000250   EXIT PROGRAM.
+000260  END PROGRAM CBU00004.

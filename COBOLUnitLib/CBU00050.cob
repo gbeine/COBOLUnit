@@ -1,7 +1,7 @@
 000010* COBOLUnit is a COBOL Unit framework testing
 000011*
 000012* Logic name: CBU-log-assert-succeed
-000013*	source name: CBU00050.cob
+000013* source name: CBU00050.cob
 000023*
 000028*  Copyright (C) 2009 Hervé Vaujour
 000029*
@@ -34,19 +34,19 @@
 000104   77 LogLine PIC X(255).
 000105   COPY CBUC0002.
 000106  LINKAGE SECTION.
-000107 	 77 AssertName PIC X(20).
-000108 	 COPY CBUC0001. 
+000107   77 AssertName PIC X(20).
+000108   COPY CBUC0001.
 000109 PROCEDURE DIVISION USING CBU-ctx AssertName.
-000110	INITIALIZE LogLine.
+000110  INITIALIZE LogLine.
 000111  PERFORM VARYING CharCount3 FROM 19 BY -1
-000112		UNTIL AssertName(CharCount3:1) <> SPACE
-000113	END-PERFORM
-000114*	DISPLAY    
-000115*     	"   Assert '" 
-000116*		AssertName(1:CharCount3)	
-000117*		"' Success.".  
+000112          UNTIL AssertName(CharCount3:1) <> SPACE
+000113  END-PERFORM
+000114* DISPLAY
+000115*         "   Assert '"
+000116*         AssertName(1:CharCount3)
+000117*         "' Success.".
 000124*   CALL CBU-write-log-line
-000125*   	USING LogLine.  
+000125*         USING LogLine.
 000127
-000128 	EXIT PROGRAM.
+000128  EXIT PROGRAM.
 000130 END PROGRAM CBU00050.

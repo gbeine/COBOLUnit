@@ -1,7 +1,7 @@
 000010* COBOLUnit is a COBOL Unit framework testing
 000011*
 000012* Logic name: CBU-add-assert-run
-000013*	source name: CBU00025.cob
+000013* source name: CBU00025.cob
 000023*
 000029*  Copyright (C) 2009 Hervé Vaujour
 000030*
@@ -26,17 +26,17 @@
 000050 PROGRAM-ID.   CBU00025.
 000083  DATA DIVISION.
 000084    WORKING-STORAGE SECTION.
-000085	  COPY CBUC0002.
-000086	  LINKAGE SECTION.
-000087	     COPY CBUC0001. 
-000088	    01 AssertN PIC X(20).
+000085    COPY CBUC0002.
+000086    LINKAGE SECTION.
+000087       COPY CBUC0001.
+000088      01 AssertN PIC X(20).
 000089   PROCEDURE DIVISION USING CBU-ctx AssertN.
 000090*    ADD 1 TO AssertTestCount.
 000093    ADD 1 TO nb-assert-run
-000094    	(index-current-suite, index-current-test).
-000095*    MOVE AssertN TO AssertRunName 
-000096*      (index-current-suite, 
+000094          (index-current-suite, index-current-test).
+000095*    MOVE AssertN TO AssertRunName
+000096*      (index-current-suite,
 000097*       index-current-test,
 000098*       index-current-assert).
-000099 	 EXIT PROGRAM.
+000099   EXIT PROGRAM.
 000100 END PROGRAM CBU00025.

@@ -1,7 +1,7 @@
 000010* COBOLUnit is a COBOL Unit framework testing
 000011*
 000012* Logic name: CBU-add-assert-failed
-000013*	source name: CBU00030.cob
+000013* source name: CBU00030.cob
 000023*
 000028*  Copyright (C) 2009 Hervé Vaujour
 000029*
@@ -26,34 +26,34 @@
 000050 PROGRAM-ID.   CBU00030.
 000083  DATA DIVISION.
 000084    WORKING-STORAGE SECTION.
-000085	  COPY CBUC0002.
-000086	  LINKAGE SECTION.
-000087	     77 AssertName PIC X(20).  	
-000088   	 77 ResExpected PIC X(32000).  	
-000089   	 77 ResActual PIC X(32000).
-000090   	 COPY CBUC0001.  
-000091   PROCEDURE DIVISION USING 
-000092   		CBU-ctx AssertName ResExpected ResActual.
+000085    COPY CBUC0002.
+000086    LINKAGE SECTION.
+000087       77 AssertName PIC X(20).
+000088            77 ResExpected PIC X(32000).
+000089            77 ResActual PIC X(32000).
+000090            COPY CBUC0001.
+000091   PROCEDURE DIVISION USING
+000092                  CBU-ctx AssertName ResExpected ResActual.
 000093    ADD 1 TO AssertFailureCount.
 000094    ADD 1 TO nb-assert-failed
-000095    	(index-current-suite, index-current-test).
-000096*	  MOVE AssertName 
-000097*	  		TO AssertRunName
-000098*				(index-current-suite, 
-000099*				 index-current-test,
-000100*				 index-current-assert).
-000101*	  MOVE 0 TO has-succeed
-000102*	  			(index-current-suite, 
-000103*				 index-current-test,
-000104*				 index-current-assert).  
-000105*	  MOVE ResExpected TO AssertValueExpected
-000106*	  			(index-current-suite, 
-000107*				 index-current-test,
-000108*				 index-current-assert).	  
-000109*	  MOVE ResActual TO AssertValueActual
-000110*	  			(index-current-suite, 
-000111*				 index-current-test,
-000112*				 index-current-assert).
-000113*	  ADD 1 TO index-current-assert.  	
-000114 	 EXIT PROGRAM.
+000095          (index-current-suite, index-current-test).
+000096*   MOVE AssertName
+000097*                 TO AssertRunName
+000098*                         (index-current-suite,
+000099*                          index-current-test,
+000100*                          index-current-assert).
+000101*   MOVE 0 TO has-succeed
+000102*                         (index-current-suite,
+000103*                          index-current-test,
+000104*                          index-current-assert).
+000105*   MOVE ResExpected TO AssertValueExpected
+000106*                         (index-current-suite,
+000107*                          index-current-test,
+000108*                          index-current-assert).
+000109*  MOVE ResActual TO AssertValueActual
+000110*                         (index-current-suite,
+000111*                          index-current-test,
+000112*                          index-current-assert).
+000113*   ADD 1 TO index-current-assert.
+000114   EXIT PROGRAM.
 000120 END PROGRAM CBU00030.
