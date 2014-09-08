@@ -1,6 +1,10 @@
 *~
 *.swp
 
+# Ouput files
+*.o
+*.dylib
+
 # Eclipse
 .buildpath
 .project
