@@ -1,0 +1,618 @@
+#summary COBOLUnit tutorial.
+#sidebar TableOfContent
+
+<table width=100>
+<TR><TD>
+Table of contents
+<wiki:toc max_depth="2" />
+
+= Introduction =
+In this section, we're going to use *COBOLUnit* trough a simple example.
+
+
+= Prerequisites =
+ * You like to read stories!
+ * You can develop in COBOL
+ * All sources can be found in source section
+
+
+= Contract of this section? =
+The aim of this page is to learn the reader how to use the COBOLUnit framework.
+<br></br>At the end of this section you should:
+ * Have coded three COBOLUnit suites
+ * Have coded the associated tests 
+ * Be able to automatically run these tests.
+
+
+= Before, let me tell you a story =
+Once upon a time... No No! Just imagine...<br></br> 
+You've just arrived in an organization with a lot of legacy code inherited from the past.<br></br>
+*But*:
+ * You don't understand it (complex with no comment), 
+ * The documentation is out of date, 
+ * The routines goals are not clear
+ * All the developers who have contributed have left
+
+*So You do not dare to move the code because you don't control impact on others modules*
+
+
+^(If you tell me that you have never encountered this situation^ <br></br>
+^then you have a lot of chance, or you write new code independently^ <br></br>
+^or you are not totally honest!)^
+
+Your boss ask you for a modification. 
+<br> Luckily, a fantastic tool give you the linkage between all the routines!</br>
+<img src="http://cobolunit.googlecode.com/files/legacy.png">
+<br></br>
+Now you have two choice:  
+ * Duplicate code to ensure no regression (this is what did your predecessors)
+ * Using COBOLUnit to *document* existing routines and to quickly track errors introduced by new code. 
+
+== Here is our legacy code ==
+   Our legacy code is made of 3 routines:
+ * Sample1.cob
+ * Sample2.cob: it uses Sample1
+ * Sample3.cob: it uses Sample1 and Sample2
+
+These Three routines are maintained by *different teams*.
+<br></br> The modification wanted should be done on *Sample1.cob*.
+
+The only things you know is:
+
+ * Sample1 is always called with the values (3,2) and returns 1
+ * Sample2 is always called with the values (5,2,5) and returns 5 
+ * Sample3 is always called with the values (2,2,2,5) and returns 7
+
+Why is this code used for? Ask people in the past becaus i dont know!<br></br> 
+Actually "Sample2" and "Sample3" are black boxes.<br></br>
+Your mission is to modify the *Sample1* code with no regression. <br></br> 
+<br></br>
+*Right now*, *Sample1's* contract is:
+<br>  *to guarantee same results when *Sample2* and *Sample3* call it.* </br>
+
+Because you do not want to crash the production system (no regression), 
+you decided to realize tests to safeguard the actual behavior.
+<br></br>Then you should be more confident to make the modification asked.
+<br></br>
+
+Let's take *Sample1* and write test on it.
+The test is simple: <br></br>
+     _to check *Sample1* call with params (3,2) returns 1!!_
+<br></br>
+So we have to write a suite including only one test.
+
+<br></br>
+= Let's write our first tests suite in COBOLUnit =
+*_First of all, COBOLUnit is not intrusive.<br></br>
+So you will be able to develop tests on the three modules without modifying the source code._*
+
+== Sample1 tests ==
+
+ * *Create* a COBOL source code called TS-SUITE.cob.<br></br>
+It should include our suite(s) and test(s) declarations. <br></br>
+This source will be call to run tests.
+ * *Insert* COBOLUnit copy books: "CBU-func" and "CBU-copy".
+     * CBU-func.copy: contains logical routines names and mapping with physical routines names.
+     * CBU-copy: contains the main COBOLUnit picture (-CBU-ctx-) which maintains COBOLUnit context variables (This picture will be passed to all COBOLUnit routines). 
+*CT-SUITE.cob:*
+
+{{{
+WORKING-STORAGE SECTION.
+  COPY CBU-func.
+  COPY CBU-copy.
+}}}
+
+ * *Initialize* the COBOLUnit engine (to setup COBOLUnit context), for this we call the routine: *CBU-initialize* with the _CBU-ctx_ in argument.
+
+{{{
+CALL CBU-initialize USING CBU-ctx
+}}}
+
+ * *Declare* your suite and tests.To do this, use: *CBU-add-suite* and *CBU-add-test-next* routines.
+     * *CBU-add-suite* <font color="#990000">*USING*</font> *[_CBU-ctx, suite-name, suite-description_]*:  declare a suite with a name and a description. But remember, you also have to give COBOLUnit context (CBU-ctx). The signature of the service is: 
+       *CBU-ctx: providing in the copy book CBU-copy
+       *suite-name: PIX(20) 
+       *suite-description: PICX(100)
+     * *CBU-add-test-next* <font color="#990000">*USING*</font> *[_CBU-ctx, test-name, test-description_]*: add a test in the suite just added and just after the precedent test (next!). The signature of the service is: 
+       *CBU-ctx: providing in the copy book CBU-copy
+       *test-name: PIX(20) 
+       *test-description: PICX(100)
+{{{
+CALL CBU-add-suite USING CBU-ctx str1 str2.
+}}}
+
+ * *Run* the suite tests using: *CBU-run*.
+
+{{{
+CALL CBU-run USING CBU-ct
+}}}
+
+Your routine should now looks like:
+
+*TS-SUITE.cob:*
+{{{
+IDENTIFICATION DIVISION.
+ PROGRAM-ID.   TS-SUITE.
+ ENVIRONMENT    DIVISION.
+ CONFIGURATION  SECTION.
+ DATA DIVISION.
+ WORKING-STORAGE SECTION.
+  	COPY CBU-func.
+  	01 str1 PIC X(20).
+  	01 str2 PIC X(100). 
+  	01 RES PIC 99.
+  	COPY CBU-copy.
+ PROCEDURE DIVISION.   
+	 INITIALIZE str1 str2.
+   MOVE "SUITE1" TO str1.
+   MOVE "DESC SUITE1" TO str2.
+ 	 CALL CBU-initialize USING CBU-ctx. 
+ 	 CALL CBU-add-suite USING CBU-ctx str1 str2.
+
+	 INITIALIZE str1 str2.
+ 	 MOVE "TS1" TO str1.
+ 	 MOVE "TEST1 desc" TO str2.
+ 	 CALL CBU-add-test-next USING CBU-ctx str1 str2.
+ 	 
+   INITIALIZE str1 str2.
+ 	 MOVE "TS2" TO str1.
+ 	 MOVE "TEST2 desc" TO str2.
+ 	 CALL CBU-add-test-next USING CBU-ctx str1 str2.
+
+   INITIALIZE str1 str2.
+ 	 MOVE "TS3" TO str1.
+ 	 MOVE "TEST3 desc" TO str2.
+ 	 CALL CBU-add-test-next USING CBU-ctx str1 str2.
+
+ 	 CALL CBU-run USING CBU-ctx.
+ END PROGRAM TS-SUITE.
+}}}
+
+That's it, we've done it: our first COBOLUnit Suite! 
+And now let's compile the code
+Because i do not have mainframe at home i use [http://www.opencobol.org/ OpenCOBOL] compiler.
+
+=== How to compile with openCOBOL? ===
+To perform this task, i decided to write shell scripts and Makefile.
+For further explaination you can go to [http://www.opencobol.org/ OpenCOBOL site].
+ * "env.script:" this file setup environment variables (use it with _source_ command).
+ * *Makefile:* this script contains rules for compilation.
+ * *build.sh:" this criptt calls Makefile
+ * *test.sh:* launch Suite tests
+
+You will find above my scripts:
+<table border="1">
+ <tr>
+  <td align=center>>
+    env.script
+  </td>
+  <td align=center>>
+    Makefile
+  </td>
+ </tr>
+ <tr>
+  <td align=center>>
+   {{{
+   # Set the COBOLUnit PATH
+   export CBU_PATH=/home/hva/workspace/COBOLUnit
+   # Set the Sample1_path
+   export SAMPLE1_PATH=/home/hva/workspace/Sample1
+   export SAMPLE1_TEST_LIB_PATH=$SAMPLE1_PATH/tests/lib
+   export SAMPLE1_LIB_PATH=$SAMPLE1_PATH/lib
+
+   export CBU_LIB_PATH=$CBU_PATH/lib
+   export LD_LIBRARY_PATH=$CBU_LIB_PATH:
+   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SAMPLE1_TEST_LIB_PATH:$SAMPLE1_LIB_PATH
+   }}}
+  </td>
+  <td align=center>>
+   {{{
+   all:  Sample1 TS-SUITE
+	
+   Sample1: Sample1.cob
+	cobc -m -o libSample1 Sample1.cob
+	mv libSample1.so lib/
+
+
+   TS-SUITE: TS-SUITE.cob 
+	cobc -x -I $(CBU_PATH) TS-SUITE.cob  -L $(CBU_LIB_PATH) -l COBOLUnit
+	mv ./TS-SUITE tests/
+
+   clean:
+	rm -rf *.so
+	rm -rf lib/
+	rm -rf tests/	
+	mkdir lib/
+	mkdir tests/
+	mkdir tests/lib/
+
+   }}}
+  </td>
+ </tr>
+</table>
+
+<table border="1">
+ <tr>
+  <td align=center>>
+   build.sh*
+  </td>
+  <td align=center>>
+   test.sh*
+  </td>
+ </tr>
+ <tr>
+  <td align=center>>
+   {{{
+   #!/bin/bash
+
+	rm -rf *.so
+	rm -rf lib/
+	rm -rf tests/	
+	mkdir lib/
+	mkdir tests/
+	mkdir tests/lib/
+
+   make all
+   exit 0;
+   }}}
+  </td>
+  <td align=center>>
+   {{{
+   #!/bin/bash
+	
+   #lib/tests/CBU-test-suite
+   tests/./TS-SUITE
+
+   exit 0;
+   }}}
+  </td>
+ </tr>
+</table>
+
+To compile we only have to type:
+<table>
+<tr><td>
+<br>*$ source env.script*</br>
+<br>*$ ./build.sh* </br>
+</td>
+<td>
+    _result screen:_
+
+{{{
+cobc -m -o libSample1 Sample1.cob
+Sample1.cob:17: Warning: File not terminated by a newline
+mv libSample1.so lib/
+cobc -x -I (COBOLUnit_PATH) T-SUITE.cob  -L (COBOLUnit_PATH)/lib -l COBOLUnit
+/CBU-copy.cob:68: Warning: File not terminated by a newline
+/CBU-func.cob:55: Warning: File not terminated by a newline
+TS-SUITE.cob:25: Warning: File not terminated by a newline
+mv ./TS-SUITE tests/
+}}}
+</td>
+</tr>
+</table>
+
+Once compilation is made, run the suite:
+
+
+<table>
+<tr><td>
+<br>*$ ./test.sh*</br> 
+</td>
+<td>
+{{{
+    _result screen:_
+
+
+$ ./test.sh 
+
+
+
+|--- SUITE1              
+| Test 'TS1' is  * FAILURE * (000 Assertions, 000 Failures. 001 errors)
+|--- FAILURE
+
+ 
+********************************************************************
+*                          FAILURE                                 *
+*     (001 test cases, 000 success, 000 failures, 001  errors)     *
+********************************************************************
+(00 min:00 sec:01 ms)
+hva@octo-hva:~/workspace/Sample1$ 
+}}}
+
+</td>
+</tr>
+</table>
+
+The output sreen indicates that the suites test have failed:
+
+{{{
+********************************************************************
+*                          FAILURE                                 *
+*     (001 test cases, 000 success, 000 failures, 001  errors)     *
+********************************************************************
+}}}
+
+
+ * Above COBOLUnit gave us information: 
+  * CBU has launch *SUITE1* Suite (we could have more than only one suite!): 
+  * CBU contained one test 'TS1' tha has be ran and which failed in error:
+
+{{{
+|--- SUITE1              
+| Test 'TS1' is  * FAILURE * (000 Assertions, 000 Failures. 001 errors)
+|--- FAILURE
+}}}
+
+
+Actually We have one error, because we *DO NOT HAVE YET IMPLEMENTED our test!!!*
+
+=== A suite without test it's good but with tests it's better ===
+In this section we are going to see how to implement a very simple test.
+
+ * *Create* COBOL source code with the same name than your test declaration: *TS1*
+ * *Insert* COBOLUnit copy books *CBU-copy* and *CBU-func*. 
+The *CBU-copy* copy books should be declared in LINKAGE SECTION.
+
+{{{
+ WORKING-STORAGE SECTION.
+  COPY CBU-func.
+ LINKAGE SECTION.
+  COPY CBU-copy.
+}}}
+
+ * *Implement* your test using assertion routines. 
+  * As i told you, the only thing i know (that is a fact!) is when i call Sample1 routine with parameters "3" and "2" it returns "1".
+  * So in our test we have to call *Sample1* using "3" and "2" and check that the result is "1".
+  * To do that we implement the test (and so the correct assertion) as follow:
+
+*TS1.cob"
+{{{
+IDENTIFICATION DIVISION.
+ PROGRAM-ID.   TS1.
+ ENVIRONMENT    DIVISION.
+ CONFIGURATION  SECTION.
+ DATA DIVISION.
+ WORKING-STORAGE SECTION.
+  COPY CBU-func.
+ 	01 A PIC 99.
+ 	01 B PIC 99.
+ 	01 RES PIC 99.
+ 	01 EXPECTED PIC 99.
+ 	01 assert-name PIC X(20).
+ 	LINKAGE SECTION.
+ 	  COPY CBU-copy.
+ PROCEDURE DIVISION USING CBU-ctx.   
+ 	MOVE 1 TO EXPECTED.  
+ 	MOVE 3 TO A.
+ 	MOVE 2 TO B.
+  CALL "Sample1" USING A B RES.
+  MOVE "Sample1(3,2)=1" TO assert-name.
+  CALL CBU-assert-nb3-equals 
+  	USING CBU-ctx assert-name EXPECTED RES. 
+ END PROGRAM TS1.
+}}}
+
+If we build and run the test:
+
+*$ ./build.sh* 
+*$ ./test.sh*
+
+The result is:
+
+{{{
+|--- SUITE1              
+| Test 'TS1' is  * SUCCESS * (001 Assertions, 000 Failures. 000 errors)
+|--- SUCCESS
+
+ 
+********************************************************************
+*                          SUCCESS                                 *
+*     (001 test cases, 001 success, 000 failures, 000  errors)     *
+********************************************************************
+(00 min:00 sec:01 ms)
+
+}}}
+
+ * CBU still detected "SUITE1" suite which contained one test "FS1"
+ * "TS1" has be ran and one assertion has been ran and succeed
+
+BRAVO you ve just written you first COBOLUnit tests.
+Next we are going to implement tests on *Sample2* and *Sample3*.
+Becaus i assume that uou have understood what we've just done, i just copied the source code for the suite and the test.
+
+== Sample2 tests ==
+
+*TS-SUITE.cob*
+
+{{{
+IDENTIFICATION DIVISION.
+ PROGRAM-ID.   TS-SUITE.
+ ENVIRONMENT    DIVISION.
+ CONFIGURATION  SECTION.
+ DATA DIVISION.
+ WORKING-STORAGE SECTION.
+  	COPY CBU-func.
+  	01 str1 PIC X(20).
+  	01 str2 PIC X(100). 
+  	01 RES PIC 99.
+    	COPY CBU-copy.
+ PROCEDURE DIVISION .   
+	 INITIALIZE str1 str2.
+   MOVE "SUITE2" TO str1.
+   MOVE "DESC SUITE2" TO str2.
+ 	 CALL CBU-initialize USING CBU-ctx. 
+ 	 CALL CBU-add-suite USING CBU-ctx str1 str2.
+
+ 	 
+   INITIALIZE str1 str2.
+ 	 MOVE "TS2" TO str1.
+ 	 MOVE "TEST2 desc" TO str2.
+ 	 CALL CBU-add-test-next USING CBU-ctx str1 str2.
+
+ 	 CALL CBU-run USING CBU-ctx.
+ END PROGRAM TS-SUITE.
+}}}
+
+
+*TS2.cob*
+
+{{{
+IDENTIFICATION DIVISION.
+ PROGRAM-ID.   TS2.
+ ENVIRONMENT    DIVISION.
+ CONFIGURATION  SECTION.
+ DATA DIVISION.
+ WORKING-STORAGE SECTION.
+ 	COPY CBU-func.
+ 	01 A PIC 99.
+ 	01 B PIC 99.
+ 	01 C PIC 99. 	
+ 	01 RES PIC 99.
+ 	01 EXPECTED PIC 99.
+ 	01 assert-name PIC X(20).
+ 	LINKAGE SECTION.
+ 	  COPY CBU-copy.
+ PROCEDURE DIVISION USING CBU-ctx.   
+ 	MOVE 5 TO EXPECTED.  
+ 	MOVE 5 TO A.
+ 	MOVE 2 TO B.
+ 	MOVE 5 TO C.
+  CALL "Sample2" USING A B C RES.
+  MOVE "(5,2,5)=5" TO assert-name.
+  CALL CBU-assert-nb3-equals 
+  	USING CBU-ctx assert-name EXPECTED RES. 
+ END PROGRAM TS2.
+}}}
+
+If we build and run the test:
+
+*$ ./build.sh* 
+*$ ./test.sh*
+
+The result is:
+
+{{{
+
+|--- SUITE2              
+| Test 'TS2' is  * SUCCESS * (001 Assertions, 000 Failures. 000 errors)
+|--- SUCCESS
+
+ 
+********************************************************************
+*                          SUCCESS                                 *
+*     (001 test cases, 001 success, 000 failures, 000  errors)     *
+********************************************************************
+(00 min:00 sec:00 ms)
+
+
+}}}
+
+== Sample3 tests ==
+
+In this suite, we are going to add the 2 previous Tests:
+
+{{{
+*TS-SUITE.cob*
+*>
+ IDENTIFICATION DIVISION.
+ PROGRAM-ID.   TS-SUITE.
+ ENVIRONMENT    DIVISION.
+ CONFIGURATION  SECTION.
+ DATA DIVISION.
+ WORKING-STORAGE SECTION.
+  	COPY CBU-func.
+  	01 str1 PIC X(20).
+  	01 str2 PIC X(100). 
+  	01 RES PIC 99.
+  	COPY CBU-copy.
+ PROCEDURE DIVISION.   
+	 INITIALIZE str1 str2.
+   MOVE "SUITE1" TO str1.
+   MOVE "DESC SUITE1" TO str2.
+ 	 CALL CBU-initialize USING CBU-ctx. 
+ 	 CALL CBU-add-suite USING CBU-ctx str1 str2.
+
+	 INITIALIZE str1 str2.
+ 	 MOVE "TS1" TO str1.
+ 	 MOVE "TEST1 desc" TO str2.
+ 	 CALL CBU-add-test-next USING CBU-ctx str1 str2.
+ 	 
+   INITIALIZE str1 str2.
+ 	 MOVE "TS2" TO str1.
+ 	 MOVE "TEST2 desc" TO str2.
+ 	 CALL CBU-add-test-next USING CBU-ctx str1 str2.
+
+   INITIALIZE str1 str2.
+ 	 MOVE "TS3" TO str1.
+ 	 MOVE "TEST3 desc" TO str2.
+ 	 CALL CBU-add-test-next USING CBU-ctx str1 str2.
+
+ 	 CALL CBU-run USING CBU-ctx.
+ END PROGRAM TS-SUITE.
+
+}}}
+
+*TS3.cob*
+
+{{{
+*>
+ IDENTIFICATION DIVISION.
+ PROGRAM-ID.   TS3.
+ ENVIRONMENT    DIVISION.
+ CONFIGURATION  SECTION.
+ DATA DIVISION.
+ WORKING-STORAGE SECTION.
+  COPY CBU-func.
+ 	01 A PIC 99.
+ 	01 B PIC 99.
+ 	01 C PIC 99.
+ 	01 D PIC 99. 	 	
+ 	01 RES PIC 99.
+ 	01 EXPECTED PIC 99.
+ 	01 assert-name PIC X(20).
+	LINKAGE SECTION.
+	  COPY CBU-copy.
+ PROCEDURE DIVISION USING CBU-ctx.   
+ 	MOVE 7 TO EXPECTED.  
+ 	MOVE 2 TO A.
+ 	MOVE 2 TO B.
+ 	MOVE 2 TO C.
+ 	MOVE 5 TO D.
+  CALL "Sample3" USING A B C D RES.
+  MOVE "(2,2,2,5)=7" TO assert-name.
+  CALL CBU-assert-nb3-equals 
+  		USING CBU-ctx assert-name EXPECTED RES. 
+ END PROGRAM TS3.
+}}}
+
+*$ ./build.sh* 
+*$ ./test.sh*
+
+The result is:
+
+
+
+{{{
+
+|--- SUITE1              
+| Test 'TS1' is  * SUCCESS * (001 Assertions, 000 Failures. 000 errors)
+| Test 'TS2' is  * SUCCESS * (001 Assertions, 000 Failures. 000 errors)
+| Test 'TS3' is  * SUCCESS * (001 Assertions, 000 Failures. 000 errors)
+|--- SUCCESS
+
+ 
+********************************************************************
+*                          SUCCESS                                 *
+*     (003 test cases, 003 success, 000 failures, 000  errors)     *
+********************************************************************
+(00 min:00 sec:02 ms)
+
+}}}
+== What else? ==
+<table width="300">
+<TR><TD>
+</TD>
+</TR>
+</TABLE>

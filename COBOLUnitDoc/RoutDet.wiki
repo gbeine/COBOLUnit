@@ -1,0 +1,356 @@
+#summary Routines details
+
+#sidebar TableOfContent
+Description of COBOLUnit routines
+
+
+= Introduction =
+ * All COBOLUnit routines are referenced in the copy book CBU-func.
+ * This copy book contains mapping between the physical routine name and its logical name
+
+
+= Details =
+<table border="1">
+ <tr>
+  <td align="center">
+    Logical routine name
+  </td>
+  <td align="center">
+    Physical routine name
+  </td>
+  <td align="center">
+    Inputs
+  </td>
+  <td align="center">
+    Outputs
+  </td>
+  <td align="center">
+    Description  
+  </td>
+ </tr>
+ <tr>
+  <td><b>CBU-reset-run  </b></td> 
+  <td>CBU-0000</td>
+  <td> 
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+  </td>
+  <td>
+   <li>CBU-ctx</li>
+  </td>
+  <td>
+   Reset all COBUnit variables between each suite test run
+  </td>
+ </tr> 
+ <tr>
+  <td><b>CBU-initialize  </b></td> 
+  <td>CBU-0001</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+  </td>
+  <td>
+   <li>CBU-ctx</li>
+  </td>
+  <td>
+   Resel all COBOLUnit variables for using COBOLUnit framework, this routine should be the first called when using COBOLUnit
+  </td>
+ </tr> 
+ <tr>
+  <td><b>CBU-call-test  </b></td> 
+  <td>CBU-0002</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+
+   <li><u>Test-name X(20)</u>: test name that COBOLUnit should run</li>
+  </td>
+  <td>
+    <li>CBU-ctx</li>
+  </td>
+  <td>
+   Call the COBOL program given in parameter "Test-name"
+  </td>
+ </tr> 
+ <tr>
+  <td><b>CBU-run  </b></td>
+  <td>CBU-0003</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+  </td>
+  <td>
+   <li>CBU-ctx</li>
+  </td>
+  <td>
+      Run all tests suites that have been added in COBOLUnit using routines "CBU-add-suite" and "CBU-add-test" or "CBU-add-test-next"
+  </td>
+ </tr>
+ <tr>
+  <td><b>CBU-add-suite  </b></td>
+  <td>CBU-0004</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+
+   <li><u>Suite-name X(20)</u>: Suite name to  add</li>
+
+   <li><u>Suite-description X(100)</u>: Description/Comment of the suite to add</li>
+  </td>
+  <td>
+   <li>CBU-ctx</li>
+  </td>
+  <td>
+   Add a suite to the COBOLUnit engine with the given parameters
+  </td>
+ </tr>
+ <tr>
+  <td><b>CBU-add-test  </b></td>
+  <td>CBU-0005</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+
+   <li><u>Suite-id 9(2)</u>: Suite index in which added test</li>      
+
+   <li><u>Test-name X(20)</u>: Test name to add</li>
+
+   <li><u>Test-description X(100)</u>: Description/Comment of the test to add</li>
+  </td>
+  <td>
+   <li>CBU-ctx</li>
+  </td>
+  <td>
+   Add a test to the suite given in parameter using "Test-name" and "Test-description". (The test name is the name of the program cobol which contains assertions). 
+   See the tutorial section for more information.
+   If you add tests consecutively you could choose "CBU-add-test-next"  
+  </td>
+ </tr>
+ <tr>
+  <td><b>CBU-suites-run  </b></td>
+  <td>CBU-0006</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+  </td>
+  <td>
+   <li>CBU-ctx</li>
+  </td>
+  <td>
+   Run all suites tests added in "CBU-ctx".
+  </td>
+ </tr>
+ <tr>
+  <td><b>CBU-suite-run  </b></td> 
+  <td>CBU-0007</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+
+   <li><u>Suite-id 9(2)</u>: Suite index of the suite you want to run tests</li>      
+  </td>
+  <td>
+   <li>CBU-ctx</li>
+  </td>
+  <td>
+    Run all the tests added to the suite which index is "Suite-id" (given in parameter)
+  </td>
+ </tr>
+ <tr>
+  <td><b>CBU-tests-run  </b></td> 
+  <td>CBU-0008</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+  </td>
+  <td>
+    <li>CBU-ctx</li>
+  </td>
+  <td>
+   Run all the tests added to the suite which index is contained in "index-current-suite" from CBU-ctx
+  </td>
+ </tr>
+ <tr>
+  <td><b>CBU-test-run  </b></td>
+  <td>CBU-0009</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+
+    <li><u>Test-id 9(2)</u>: Test index of the test you want to run</li> 
+  </td>
+  <td>
+    <li>CBU-ctx</li>
+  </td>
+  <td>
+    Run the test which index is "Test-id" (given in parameter)
+  </td>
+ </tr>  	
+ <tr><td><b>CBU-add-test-next  </b></td>
+  <td>CBU-0012</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+
+   <li><u>Test-name X(20)</u>: Test name to add</li>
+
+   <li><u>Test-description X(100)</u>: Description/Comment test to add</li>
+  </td>
+  <td>
+    <li>CBU-ctx</li>
+  </td>
+  <td>
+    Add a test to the current suite. Current suite index is set in "index-current-suite" from "CBU-ctx"
+  </td>
+ </tr>  	
+ <tr>
+  <td><b>CBU-add-assert-succeed  </b></td>
+  <td>CBU-0020</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+
+   <li><u>Assert-name X(20)</u>: Assert name which succeed (not use for the moment)</li>  
+  </td>
+  <td>
+    <li>CBU-ctx</li>
+  </td>
+  <td>
+   Increment by one the assert success for the considered suite (index-current-suite from CBU-copy)
+  </td>
+ </tr>
+ <tr>
+  <td><b>CBU-add-assert-run  </b></td> 
+  <td>CBU-0025</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+
+   <li><u>Assert-name X(20)</u>: Assert name which succeed (not use for the moment)</li>  
+  </td>
+  <td>
+    <li>CBU-ctx</li>
+  </td>
+  <td>
+   Increment by one the asserts run for the considered suite (index-current-suite from CBU-copy)
+  </td>
+ </tr>
+
+ <tr>
+  <td><b>CBU-add-assert-failed  </b></td>
+  <td>CBU-0030</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+
+   <li><u>Assert-name X(20)</u>: Assert name which succeed (not use for the moment)</li>  
+  </td>
+  <td>
+    <li>CBU-ctx</li>
+  </td>
+  <td>
+   Increment by one the asserts failed for the considered suite (index-current-suite from CBU-copy)
+  </td>
+ </tr>  	
+ <tr>
+  <td><b>CBU-add-error  </b></td>
+  <td>CBU-0040</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+  </td>
+  <td>
+    <li>CBU-ctx</li>
+  </td>
+  <td>
+   Increment by one the errors numbers for the considered suite (index-current-suite from CBU-copy. (An error occurs when the test name does not match with a COBOL program.
+  </td>
+ </tr>   	
+ <tr>
+  <td><b>CBU-log-assert-succeed  </b></td>
+  <td>CBU-0050</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+
+   <li><u>Assert-name</u>: Assertion name which succeed</li>
+
+  </td>
+  <td>
+    <li>CBU-ctx</li>
+  </td>
+  <td>
+   This routine is called each tima an assert succeed to log information
+  </td>
+ </tr> 
+ <tr>
+  <td><b>CBU-log-assert-failed  </b></td>
+  <td>CBU-0060</td>
+
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+
+   <li><u>Assert-name</u>: Assertion name which succeed</li>
+
+   <li><u>Expected-result X(32000)</u>: Expected result for the assert</li>
+
+   <li><u>Actual-result X(32000)</u>: Actual result once this assert ran</li>
+  </td>
+  <td>
+    <li>CBU-ctx</li>
+  </td>
+  <td>
+   This routine is called each tima an assert failed to log information
+  </td>
+ </tr> 
+ <tr>
+  <td><b>CBU-write-log-line  </b></td>
+  <td>CBU-0080</td>
+  <td>
+   <li><u>CBU-ctx</u>: CBU context variables providing in copy book "CBU-copy"</li>
+
+   <li><u>Log-line X(255)</u>: Line to Log</li>
+  </td>
+  <td>
+   none
+  </td>
+  <td>
+   Log the line given in parameter.
+  </td>
+ </tr>  	  	
+ <tr>
+  <td><b>CBU-assert-str(100)-equals  </b></td>
+  <td>CBU-0100</td>  
+  <td>
+   <li><u>Assert-name</u>: Assertion name</li>
+
+   <li><u>Expected-result X(100)</u>: Expected result for the assert</li>
+
+   <li><u>Actual-result X(100)</u>: string to compare</li>
+  </td>
+  <td>
+    <li>CBU-ctx</li>
+  </td>
+  <td>
+   Assertion succeed if "Actual-result" equals "Expected-result" otherwise assertion failed
+  </td>
+ </tr>
+ <tr>
+  <td><b>CBU-assert-str-equals  </b></td>
+  <td>CBU-0101</td>  
+  <td>
+   <li><u>Assert-name</u>: Assertion name</li>
+
+   <li><u>Expected-result X(32000)</u>: Expected result for the assert</li>
+
+   <li><u>Actual-result X(32000)</u>: string to compare</li>
+  </td>
+  <td>
+    <li>CBU-ctx</li>
+  </td>
+  <td>
+   Assertion succeed if "Actual-result" equals "Expected-result" otherwise assertion failed
+  </td>
+ </tr>
+ <tr>
+  <td><b>CBU-assert-nb3-equals  </b></td>
+  <td>CBU-0102</td>
+  <td>
+   <li><u>Assert-name</u>: Assertion name which succeed</li>
+
+   <li><u>Expected-nb 9(3)</u>: Expected result for the assert</li>
+
+   <li><u>Actual-nb 9(3)</u>: number to compare</li>
+  </td>
+  <td>
+    <li>CBU-ctx</li>
+  </td>
+  <td>
+   Assertion succeed if "Actual-result" equals "Expected-result" otherwise assertion failed
+  </td>
+ </tr> 
+</table>
